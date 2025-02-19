@@ -137,7 +137,7 @@ jobs:
       - name: Deploy to production
         run: echo "Deploying Hello World to production environment"
       - name: Notify via Slack
-        run: echo "Slack: Hello World deployed to production"
+        run: 'echo "Slack: Hello World deployed to production"'
       - name: Notify via Email
         run: echo "Email: Hello World deployed to production"
 
