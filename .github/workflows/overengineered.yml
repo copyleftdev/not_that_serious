@@ -139,7 +139,7 @@ jobs:
       - name: Notify via Slack
         run: 'echo "Slack: Hello World deployed to production"'
       - name: Notify via Email
-        run: echo "Email: Hello World deployed to production"
+        run: 'echo "Email: Hello World deployed to production"'
 
   # Post-deployment validation and rollback mechanism
   validate_prod:
