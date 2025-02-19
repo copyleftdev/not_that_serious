@@ -1,3 +1,4 @@
+// Copyright 2025 <Copyleftdev>
 #include <iostream>
 
 int main() {
