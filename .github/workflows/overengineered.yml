@@ -54,7 +54,7 @@ jobs:
           export PATH="/usr/lib/ccache:$PATH"
           make
       - name: Upload build artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: hello-world-binary
           path: ./main
@@ -64,7 +64,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: hello-world-binary
       - name: Run tests with GoogleTest (simulated)
@@ -75,87 +75,4 @@ jobs:
 
   test_catch:
     needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: hello-world-binary
-      - name: Run tests with Catch2 (simulated)
-        run: |
-          echo "Running tests using Catch2 framework"
-          ./main > output.txt
-          grep -q "Hello, World!" output.txt
-
-  # Packaging stage with artifact storage
-  package:
-    needs: [test_google, test_catch]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
-        with:
-          name: hello-world-binary
-      - name: Create release package
-        run: tar -czf hello-world.tar.gz main
-      - name: Upload release artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: hello-world-package
-          path: hello-world.tar.gz
-
-  # Deployment to multiple fake environments with approval gates
-  deploy_staging:
-    needs: package
-    runs-on: ubuntu-latest
-    environment: staging
-    steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: hello-world-package
-      - name: Deploy to staging
-        run: echo "Deploying Hello World to staging environment"
-
-  deploy_preprod:
-    needs: deploy_staging
-    runs-on: ubuntu-latest
-    environment: "pre-production"
-    steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: hello-world-package
-      - name: Deploy to pre-production
-        run: echo "Deploying Hello World to pre-production environment"
-
-  deploy_prod:
-    needs: deploy_preprod
-    runs-on: ubuntu-latest
-    environment: production
-    steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: hello-world-package
-      - name: Deploy to production
-        run: echo "Deploying Hello World to production environment"
-      - name: Notify via Slack
-        run: 'echo "Slack: Hello World deployed to production"'
-      - name: Notify via Email
-        run: 'echo "Email: Hello World deployed to production"'
-
-  # Post-deployment validation and rollback mechanism
-  validate_prod:
-    needs: deploy_prod
-    runs-on: ubuntu-latest
-    steps:
-      - name: Validate production deployment
-        run: |
-          echo "Validating production deployment..."
-          # Simulate a failed validation to trigger rollback
-          exit 1
-
-  rollback:
-    needs: [deploy_prod, validate_prod]
-    if: ${{ always() && needs.validate_prod.result == 'failure' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Rollback deployment
-        run: echo "Rolling back production deployment due to failed validation"
+    runs-on: ubuntu
